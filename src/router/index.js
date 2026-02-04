@@ -21,6 +21,11 @@ const router = createRouter({
       path:'/sample',
       name:'sample',
       component:()=> import('../views/scoreboard.vue')
+    },
+     {
+      path:'/table',
+      name:'table',
+      component:()=> import('../views/viewtable.vue')
     }
   ],
 })

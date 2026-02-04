@@ -1,6 +1,7 @@
 <script setup>
 import { computed, reactive, ref } from 'vue'
-const count = ref(0)
+import {userdetail}  from '@/stores/score'
+const userstore =userdetail()
 const users = reactive([])
 const user = reactive({
   firstname: "",
@@ -32,56 +33,80 @@ function resetform() {
   Object.keys(errors).forEach(key => delete errors[key])
 }
 
+const validationError=computed(()=>{
+  const e ={}
+  if (user.firstname != ''   && (user.firstname.length < 3)){
+      e.firstname ="First Name must be atleast 3 character"
+  }
+  else{
+    delete e.firstname
+  }
+  if (user.lastname != ''&& user.lastname.length <3){
+    e.lastname="Last Must be atleast 3 character"
+  }
+   else{
+    delete e.lastname
+  }
+  if (user.email && !/^\S+@\S+\.\S+$/.test(user.email)){
+    e.email ="Invalid Email format"
+  }
+   else{
+    delete e.email
+  }
+  if (user.phonenumber && (!/^\d{10}$/.test(user.phonenumber))){
+     e.phonenumber ="Invalid Mobile number format"
+  }
+   else{
+    delete e.phonenumber
+  }
+ if (user.password && user.password.length < 6){
+  e.password ="Password should be atleast 6 charachter"
+  }
+   else{
+    delete e.password
+  }
+if (user.repassword && user.repassword.length < 6){
+  e.repassword ="Password should be atleast 6 charachter"
+}
+ else{
+    delete e.repassword
+  }
+if (user.repassword && !(user.repassword == user.password) ){
+  e.repassword = "Passwords do not match"
+}
+ else{
+    delete e.repassword
+  }
+    
+  return e
+})
 const fullname = computed(() => {
   return `${user.firstname}  ${user.lastname}`
 })
+
 function submitform() {
+  console.log(user)
   signtry.value++;
-  Object.keys(errors).forEach(key => delete errors[key])
-  if (!user.firstname) {
-    errors.firstname = "first is required"
-  } else if (user.firstname.length < 3) {
-    errors.firstname = "first must be at least 3 characters"
-  }
-  if (!user.lastname) {
-    errors.lastname = "lastname is required"
-  }
-  if (!user.gender) {
-    errors.gender = "Please select gender"
-  }
-  if (!user.email) {
-    errors.email = "Email is required"
-  } else if (!/^\S+@\S+\.\S+$/.test(user.email)) {
-    errors.email = "Invalid email format"
-  }
-
-  if (!user.phonenumber) {
-    errors.phonenumber = "Phone number is required"
-  } else if (!/^\d{10}$/.test(user.phonenumber)) {
-    errors.phonenumber = "Phone must be 10 digits"
-  }
-
-  if (!user.password) {
-    errors.password = "Password is required"
-  } else if (user.password.length < 6) {
-    errors.password = "Password must be at least 6 characters"
-  }
-
-  if (user.password !== user.repassword) {
-    errors.repassword = "Passwords do not match"
-  }
-
-  if (Object.keys(errors).length > 0) {
+  if (Object.keys(validationError.value).length > 0) {
     return
   }
-
   signsuccess.value++
-  users.push({
-    username: fullname.value,
-    gender: user.gender,
+  console.log(fullname.value)
+  userstore.addUser({
+    username :fullname.value,
+    gender :user.gender,
     email: user.email,
     phonenumber: user.phonenumber
-  })
+  }
+  )
+  console.log(userstore.users)
+  // users.push({
+  //   username: fullname.value,
+  //   gender: user.gender,
+  //   email: user.email,
+  //   phonenumber: user.phonenumber
+  // })
+
   resetform()
   showtable()
 }
@@ -94,15 +119,15 @@ function submitform() {
         <div class="field">
           <label for="firstname">First Name</label>
           <input type="text" id="firstname" name="firstname" v-model="user.firstname">
-          <small v-if="errors.firstname" class="error">
-            {{ errors.firstname }}
+          <small v-if="validationError.firstname" class="error">
+            {{ validationError.firstname }}
           </small>
         </div>
         <div class="field">
           <label for="lastname">Last Name</label>
           <input type="text" id="lastname" name="lastname" v-model="user.lastname">
-          <small v-if="errors.lastname" class="error">
-            {{ errors.lastname }}
+          <small v-if="validationError.lastname" class="error">
+            {{ validationError.lastname }}
           </small>
         </div>
         <div class="field">
@@ -111,33 +136,32 @@ function submitform() {
             <input type="radio" name="gender" value="male" v-model="user.gender">Male
             <input type="radio" name="gender" value="female" v-model="user.gender">Female
           </div>
-          <small v-if="errors.gender" class="error">
-            {{ errors.gender }}
-          </small>
+          <small v-if="validationError.gender" class="error">{{ validationError.gen }}</small>
         </div>
         <div class="field">
           <label for="email">Email</label>
           <input type="email" id="email" name="email" v-model="user.email">
-          <small v-if="errors.email" class="error">
-            {{ errors.email }}
+          <small v-if="validationError.email" class="error">
+            {{ validationError.email }}
           </small>
         </div>
         <div class="field">
           <label for="phonenumber">Phone Number</label>
           <input type="text" id="phonenumber" name="phonenumber" v-model="user.phonenumber">
-          <small v-if="errors.phonenumber" class="error">
-            {{ errors.phonenumber }}
+          <small v-if="validationError.phonenumber" class="error">
+            {{ validationError.phonenumber }}
           </small>
         </div>
-        
+
         <div class="field">
           <label for="password">Enter Your Password</label>
           <input type="password" id="password" minlength="6" v-model="user.password">
+          <small v-if="validationError.password" class="error">{{ validationError.password }}</small>
         </div>
         <div class="field">
           <label for="repassword">Confirm your password</label>
           <input type="password" id="repassword" minlength="6" v-model="user.repassword">
-          <small v-if="errors.repassword" class="error">{{ errors.repassword }}</small>
+          <small v-if="validationError.repassword" class="error">{{ validationError.repassword }}</small>
         </div>
         <button type="reset">Reset</button>
         <button type="submit">Submit</button>
@@ -165,7 +189,7 @@ function submitform() {
         </thead>
 
         <tbody>
-          <tr v-for="(u, i) in users" :key="i">
+          <tr v-for="(u, i) in userstore.users" :key="i">
             <td>{{ u.username }}</td>
             <td>{{ u.gender }}</td>
             <td>{{ u.email }}</td>

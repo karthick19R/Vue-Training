@@ -1,6 +1,6 @@
 <script setup>
-import {matchScoreBoard} from '@/stores/score'
-const match = matchScoreBoard()
+// import {matchScoreBoard} from '@/stores/score'
+// const match = matchScoreBoard()
 </script>
 <template>
  <div class="score">
