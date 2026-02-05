@@ -1,7 +1,7 @@
 <script setup>
 import { computed, reactive, ref } from 'vue'
-import {userdetail}  from '@/stores/score'
-const userstore =userdetail()
+import { userdetail } from '@/stores/score'
+const userstore = userdetail()
 const user = reactive({
   firstname: "",
   lastname: "",
@@ -32,67 +32,66 @@ function resetform() {
   Object.keys(errors).forEach(key => delete errors[key])
 }
 
-const validationError=computed(()=>{
-  const e ={}
-  if (user.firstname != ''   && (user.firstname.length < 3)){
-      e.firstname ="First Name must be atleast 3 character"
-      delete errors.firstname
-  }
-  else{
-    delete e.firstname
-  }
-  if (user.lastname != ''&& user.lastname.length <3){
-    e.lastname="Last Must be atleast 3 character"
-    delete errors.lastname
-  }
-   else{
-    delete e.lastname
-  }
-  if (user.email && !/^\S+@\S+\.\S+$/.test(user.email)){
-    e.email ="Invalid Email format"
-    delete errors.email
-  }
-   else{
-    delete e.email
-  }
-  if(user.gender){
-    delete errors.gender
-  }
-  if (user.phonenumber && (!/^\d{10}$/.test(user.phonenumber))){
-     e.phonenumber ="Invalid Mobile number format"
-     delete errors.phonenumber
-  }
-   else{
-    delete e.phonenumber
-  }
- if (user.password && user.password.length < 6){
-  e.password ="Password should be atleast 6 charachter"
-  delete errors.password
-  }
-   else{
-    delete e.password
-  }
-if (user.repassword && user.repassword.length < 6){
-  e.repassword ="Password should be atleast 6 charachter"
-  delete errors.repassword
-}
- else{
-    delete e.repassword
-  }
-if (user.repassword && !(user.repassword == user.password) ){
-  e.repassword = "Passwords do not match"
+// const validationError = computed(() => {
+//   const e = {}
+//   if (user.firstname != '' && (user.firstname.length < 3)) {
+//     e.firstname = "First Name must be atleast 3 character"
+//     delete errors.firstname
+//   }
+//   else {
+//     delete e.firstname
+//   }
+//   if (user.lastname != '' && user.lastname.length < 3) {
+//     e.lastname = "Last Must be atleast 3 character"
+//     delete errors.lastname
+//   }
+//   else {
+//     delete e.lastname
+//   }
+//   if (user.email && !/^\S+@\S+\.\S+$/.test(user.email)) {
+//     e.email = "Invalid Email format"
+//     delete errors.email
+//   }
+//   else {
+//     delete e.email
+//   }
+//   if (user.gender) {
+//     delete errors.gender
+//   }
+//   if (user.phonenumber && (!/^\d{10}$/.test(user.phonenumber))) {
+//     e.phonenumber = "Invalid Mobile number format"
+//     delete errors.phonenumber
+//   }
+//   else {
+//     delete e.phonenumber
+//   }
+//   if (user.password && user.password.length < 6) {
+//     e.password = "Password should be atleast 6 charachter"
+//     delete errors.password
+//   }
+//   else {
+//     delete e.password
+//   }
+//   if (user.repassword && user.repassword.length < 6) {
+//     e.repassword = "Password should be atleast 6 charachter"
+//     delete errors.repassword
+//   }
+//   else {
+//     delete e.repassword
+//   }
+//   if (user.repassword && !(user.repassword == user.password)) {
+//     e.repassword = "Passwords do not match"
 
-}
- else{
-    delete e.repassword
-  }
-    
-  return e
-})
+//   }
+//   else {
+//     delete e.repassword
+//   }
+//   return e
+// })
 const fullname = computed(() => {
   return `${user.firstname}  ${user.lastname}`
 })
-function validate(){
+function validate() {
   if (user.firstname == "") {
     errors.firstname = "First Name  is required"
   }
@@ -101,34 +100,40 @@ function validate(){
   }
   if (user.gender == "") {
     errors.gender = "Please select gender"
-  }  if (!user.email) {
-    errors.email = "Email is required"}
-    if (!user.phonenumber) {
+  } if (!user.email) {
+    errors.email = "Email is required"
+  }
+  if (!user.phonenumber) {
     errors.phonenumber = "Phone number is required"
-  }  if (!user.password) {
+  } if (!user.password) {
     errors.password = "Password is required"
-     if (!user.repassword) {
-    errors.repassword = "Retype your password"}
-  }if (user.password !== user.repassword) {
-    errors.repassword = "Passwords do not match"}
-  
+    if (!user.repassword) {
+      errors.repassword = "Retype your password"
+    }
+  } if (user.password !== user.repassword) {
+    errors.repassword = "Passwords do not match"
+  }
+
+}
+function congrat(){
+  window.alert("User Created Successfully")
 }
 function submitform() {
   console.log(user)
   signtry.value++;
-  if (Object.keys(validationError.value).length > 0) {
+  // if (Object.keys(validationError.value).length > 0) {
+  //   return
+  // }
+  validate() 
+  if (Object.keys(errors).length > 0) {
     return
   }
-  validate()
-if (Object.keys(errors).length > 0) {
-  return
-}
 
   signsuccess.value++
   console.log(fullname.value)
   userstore.addUser({
-    username :fullname.value,
-    gender :user.gender,
+    username: fullname.value,
+    gender: user.gender,
     email: user.email,
     phonenumber: user.phonenumber
   }
@@ -140,6 +145,7 @@ if (Object.keys(errors).length > 0) {
   //   email: user.email,
   //   phonenumber: user.phonenumber
   // })
+  congrat()
   resetform()
   showtable()
 }
@@ -152,9 +158,9 @@ if (Object.keys(errors).length > 0) {
         <div class="field">
           <label for="firstname">First Name</label>
           <input type="text" id="firstname" name="firstname" v-model="user.firstname">
-          <small v-if="validationError.firstname" class="error">
+          <!-- <small v-if="validationError.firstname" class="error">
             {{ validationError.firstname }}
-          </small>
+          </small> -->
           <small v-if="errors.firstname" class="error">
             {{ errors.firstname }}
           </small>
@@ -162,9 +168,9 @@ if (Object.keys(errors).length > 0) {
         <div class="field">
           <label for="lastname">Last Name</label>
           <input type="text" id="lastname" name="lastname" v-model="user.lastname">
-          <small v-if="validationError.lastname" class="error">
+          <!-- <small v-if="validationError.lastname" class="error">
             {{ validationError.lastname }}
-          </small>
+          </small> -->
           <small v-if="errors.lastname" class="error">
             {{ errors.lastname }}
           </small>
@@ -180,9 +186,9 @@ if (Object.keys(errors).length > 0) {
         <div class="field">
           <label for="email">Email</label>
           <input type="email" id="email" name="email" v-model="user.email">
-          <small v-if="validationError.email" class="error">
+          <!-- <small v-if="validationError.email" class="error">
             {{ validationError.email }}
-          </small>
+          </small> -->
           <small v-if="errors.email" class="error">
             {{ errors.email }}
           </small>
@@ -190,9 +196,9 @@ if (Object.keys(errors).length > 0) {
         <div class="field">
           <label for="phonenumber">Phone Number</label>
           <input type="text" id="phonenumber" name="phonenumber" v-model="user.phonenumber">
-          <small v-if="validationError.phonenumber" class="error">
+          <!-- <small v-if="validationError.phonenumber" class="error">
             {{ validationError.phonenumber }}
-          </small>
+          </small> -->
           <small v-if="errors.phonenumber" class="error">
             {{ errors.phonenumber }}
           </small>
@@ -201,13 +207,13 @@ if (Object.keys(errors).length > 0) {
         <div class="field">
           <label for="password">Enter Your Password</label>
           <input type="password" id="password" minlength="6" v-model="user.password">
-          <small v-if="validationError.password" class="error">{{ validationError.password }}</small>
+          <!-- <small v-if="validationError.password" class="error">{{ validationError.password }}</small> -->
           <small v-if="errors.password" class="error">{{ errors.password }}</small>
         </div>
         <div class="field">
           <label for="repassword">Confirm your password</label>
           <input type="password" id="repassword" minlength="6" v-model="user.repassword">
-          <small v-if="validationError.repassword" class="error">{{ validationError.repassword }}</small>
+          <!-- <small v-if="validationError.repassword" class="error">{{ validationError.repassword }}</small> -->
           <small v-if="errors.repassword" class="error">{{ errors.repassword }}</small>
         </div>
         <button type="reset">Reset</button>
@@ -218,9 +224,9 @@ if (Object.keys(errors).length > 0) {
   <div>
     <p id="nosignup">Number of People tried signing in {{ signtry }} and from it {{ signsuccess }} were successful </p>
   </div>
-<router-link to="/table">
-  <button type="button">View Users</button>
-</router-link>
+  <router-link to="/table">
+    <button type="button">View Users</button>
+  </router-link>
   <!-- <div>{{ users }}</div> -->
   <div v-show=false class="data-table">
     <div id="usertabletitle">
@@ -252,10 +258,10 @@ if (Object.keys(errors).length > 0) {
 
 </template>
 
-<style scoped> 
+<style scoped>
 .page {
   min-height: 100vh;
-  display: flex ;
+  display: flex;
   align-items: center;
   justify-content: center;
   background: #fefeff;

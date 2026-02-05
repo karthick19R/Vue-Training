@@ -1,15 +1,10 @@
 <script setup>
-import { ref,watch ,computed} from 'vue'
+import { ref, watch, computed } from 'vue'
 
 const props = defineProps({
-  headers: {
-    type: Array,
-    required: true
-  },
-  rows: {
-    type: Array,
-    required: true
-  },
+  headers: Array,
+  rows: Array,
+  modelValue: String,
   emptyText: {
     type: String,
     default: 'No data available'
@@ -19,52 +14,66 @@ const props = defineProps({
     default: 5
   }
 })
-const emit=defineEmits(['delete-row','search-data'])
-const search =ref('')
-const currentpage = ref(1)
-watch(search, (value) => {
-  emit('search-data', value)
-  currentpage.value =1
-})
-const pagedRows = computed(() => {
-  const start =
-    (currentpage.value - 1) * props.rowsPerPage
-  const end = start + props.rowsPerPage
 
+const emit = defineEmits(['delete-row', 'update:modelValue'])
+const currentpage = ref(1)
+watch(
+  () => props.modelValue,
+  () => {
+    currentpage.value = 1
+  },
+  ()=>{
+    if (props.modelValue.length < 1){
+      dataAvailable = false
+    }
+  }
+)
+const pagedRows = computed(() => {
+  const start = (currentpage.value - 1) * props.rowsPerPage
+  const end = start + props.rowsPerPage
   return props.rows.slice(start, end)
 })
 const totalPages = computed(() =>
   Math.ceil(props.rows.length / props.rowsPerPage)
 )
 function deleterow(rIndex) {
-  const globalIndex =(currentpage.value - 1) * props.rowsPerPage + rIndex
+  const confirmDelete = window.confirm(
+    'Are you sure you want to delete this record?'
+  )
+  if (!confirmDelete) return
+  const globalIndex =
+    (currentpage.value - 1) * props.rowsPerPage + rIndex
+
   emit('delete-row', globalIndex)
 }
+
 function nextPage() {
   if (currentpage.value < totalPages.value) {
     currentpage.value++
   }
 }
 function previousPage() {
-  if (currentpage.value > 0) {
+  if (currentpage.value > 1) {
     currentpage.value--
   }
 }
-</script>
+const dataAvailable=ref(true)
 
+</script>
 <template>
   <div class="container">
     <div class="search-wrapper">
-      <input
-        type="text"
-        v-model="search"
-        placeholder="Search users..."
-        class="search"
-      />
+       <input
+    type="text"
+    placeholder="Search..."
+    :value="modelValue"
+    @input="emit('update:modelValue', $event.target.value)"
+    :class="{active :!dataAvailable}"
+  />
     </div>
-
     <div class="table-wrapper">
-      <table v-if="rows.length" class="customtable">
+      <div v-if="rows.length" >
+      <table class="customtable">
         <thead>
           <tr>
             <th v-for="h in headers" :key="h">
@@ -80,18 +89,27 @@ function previousPage() {
               {{ Data[h] }}
             </td>
             <td>
-              <button class="delete-btn" @click="deleterow(rIndex)">
-                Remove
-              </button>
+              <td>
+                <slot name="actions" :index="rIndex">
+                  <button class="delete-btn" @click="deleterow(rIndex)">
+                    Remove
+                  </button>
+                </slot>
+              </td>
+
             </td>
           </tr>
         </tbody>
-        <div class="navbtn"> <button @click="nextPage":disabled="currentpage === totalPages">Next Page</button>
-        <button @click="previousPage":disabled="currentpage === 1">Previous Page</button>
-        </div>
+        
       </table>
+
+      <div class="navbtn"> 
+        <button @click="previousPage":disabled="currentpage === 1">Previous Page</button>
+        <button @click="nextPage":disabled="currentpage === totalPages">Next Page</button>
+        
+        </div>
+      </div>
       <p v-else class="empty">{{ emptyText }}</p>
-     
     </div>
   </div>
 </template>
@@ -123,8 +141,12 @@ button {
   padding: 6px 12px;
   border-radius: 6px;
   cursor: pointer;
+  margin: auto;
   font-size: 13px;
   transition: background 0.2s ease, transform 0.1s ease;
+}
+.active{
+display: none;
 }
 .search {
   width: 260px;
@@ -184,12 +206,10 @@ button {
   font-size: 13px;
   transition: background 0.2s ease, transform 0.1s ease;
 }
-
 .delete-btn:hover {
   background: #e54848;
   transform: translateY(-1px);
 }
-
 .delete-btn:active {
   transform: translateY(0);
 }
@@ -199,5 +219,4 @@ button {
   font-style: italic;
   text-align: center;
 }
-
 </style>

@@ -1,6 +1,6 @@
 <script setup>
 import { computed, ref } from 'vue';
-import tablecomponent from '../components/tablecomponent.vue'
+// import tablecomponent from '../components/tablecomponent.vue'
 import { userdetail } from '@/stores/score';
 const userstore =userdetail()
 const headers = computed(() => {
@@ -23,7 +23,14 @@ const rows=computed(()=>{
 </script>
 <template>
     <h1 class="h1">User Table</h1>
-    <tablecomponent :headers="headers" :rows="rows"  @delete-row="removeUser" @search-data="search = $event"/>
+    <!-- <tablecomponent :headers="headers" :rows="rows"  @delete-row="removeUser" @search-data="search = $event" /> -->
+    <tablecomponent :headers="headers" :rows="rows"  @delete-row="removeUser"  v-model="search">
+      <template #actions="{ index }">
+      <button class="delete-btn" @click="removeUser(index)">
+        Remove
+      </button>
+    </template>
+    </tablecomponent>
     <router-link to="/signup">
   <button type="button">Go To Forms</button>
 </router-link>
