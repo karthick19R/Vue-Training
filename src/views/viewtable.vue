@@ -19,6 +19,7 @@ const rows=computed(()=>{
     return Object.values(row).some(value=> String(value).toLowerCase().includes(search.value.toLowerCase()))
   })
 })
+
 </script>
 <template>
     <h1 class="h1">User Table</h1>
@@ -32,4 +33,15 @@ const rows=computed(()=>{
   font-weight: 500;
   margin-bottom: 16px;
 }
+button{
+  background: #ff5c5c;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
 </style>

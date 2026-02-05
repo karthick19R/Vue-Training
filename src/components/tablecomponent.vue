@@ -1,5 +1,5 @@
 <script setup>
-import { ref,watch } from 'vue'
+import { ref,watch ,computed} from 'vue'
 
 const props = defineProps({
   headers: {
@@ -14,15 +14,42 @@ const props = defineProps({
     type: String,
     default: 'No data available'
   },
+  rowsPerPage: {
+    type: Number,
+    default: 5
+  }
 })
 const emit=defineEmits(['delete-row','search-data'])
-function deleterow(index){
-  emit('delete-row',index)
-}
 const search =ref('')
+const currentpage = ref(1)
 watch(search, (value) => {
   emit('search-data', value)
+  currentpage.value =1
 })
+const pagedRows = computed(() => {
+  const start =
+    (currentpage.value - 1) * props.rowsPerPage
+  const end = start + props.rowsPerPage
+
+  return props.rows.slice(start, end)
+})
+const totalPages = computed(() =>
+  Math.ceil(props.rows.length / props.rowsPerPage)
+)
+function deleterow(rIndex) {
+  const globalIndex =(currentpage.value - 1) * props.rowsPerPage + rIndex
+  emit('delete-row', globalIndex)
+}
+function nextPage() {
+  if (currentpage.value < totalPages.value) {
+    currentpage.value++
+  }
+}
+function previousPage() {
+  if (currentpage.value > 0) {
+    currentpage.value--
+  }
+}
 </script>
 
 <template>
@@ -48,9 +75,9 @@ watch(search, (value) => {
         </thead>
 
         <tbody>
-          <tr v-for="(row, rIndex) in rows" :key="rIndex">
+          <tr v-for="(Data, rIndex) in pagedRows" :key="rIndex">
             <td v-for="h in headers" :key="h">
-              {{ row[h] }}
+              {{ Data[h] }}
             </td>
             <td>
               <button class="delete-btn" @click="deleterow(rIndex)">
@@ -59,14 +86,15 @@ watch(search, (value) => {
             </td>
           </tr>
         </tbody>
+        <div class="navbtn"> <button @click="nextPage":disabled="currentpage === totalPages">Next Page</button>
+        <button @click="previousPage":disabled="currentpage === 1">Previous Page</button>
+        </div>
       </table>
-
       <p v-else class="empty">{{ emptyText }}</p>
+     
     </div>
   </div>
 </template>
-
-
 
 <style scoped>
 .container {
@@ -82,7 +110,22 @@ watch(search, (value) => {
   justify-content: flex-end;
   margin-bottom: 16px;
 }
-
+.navbtn{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 3%;
+}
+button {
+  background: #ff5c5c;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
 .search {
   width: 260px;
   padding: 10px 14px;
@@ -116,7 +159,7 @@ watch(search, (value) => {
   padding: 14px;
   background: #e4a095;
   color: #222;
-  text-align: left;
+  text-align: center;
   font-weight: 600;
   font-size: 14px;
 }
@@ -127,13 +170,9 @@ watch(search, (value) => {
   font-size: 14px;
 }
 
-.customtable tbody tr {
-  transition: background 0.15s ease;
-}
-
 .customtable tbody tr:hover {
   background: #fafafa;
-}
+} 
 
 .delete-btn {
   background: #ff5c5c;
@@ -154,8 +193,6 @@ watch(search, (value) => {
 .delete-btn:active {
   transform: translateY(0);
 }
-
-/* Empty state */
 .empty {
   margin-top: 20px;
   color: #777;
