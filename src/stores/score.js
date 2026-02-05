@@ -13,5 +13,9 @@ export const userdetail = defineStore('user', () => {
     //console.log(users)
   }
 
-  return {users ,addUser}
+  function removeUser(index){
+    users.splice(index,1)
+  }
+
+  return {users ,addUser,removeUser }
 })

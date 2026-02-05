@@ -2,7 +2,6 @@
 import { computed, reactive, ref } from 'vue'
 import {userdetail}  from '@/stores/score'
 const userstore =userdetail()
-const users = reactive([])
 const user = reactive({
   firstname: "",
   lastname: "",
@@ -37,42 +36,52 @@ const validationError=computed(()=>{
   const e ={}
   if (user.firstname != ''   && (user.firstname.length < 3)){
       e.firstname ="First Name must be atleast 3 character"
+      delete errors.firstname
   }
   else{
     delete e.firstname
   }
   if (user.lastname != ''&& user.lastname.length <3){
     e.lastname="Last Must be atleast 3 character"
+    delete errors.lastname
   }
    else{
     delete e.lastname
   }
   if (user.email && !/^\S+@\S+\.\S+$/.test(user.email)){
     e.email ="Invalid Email format"
+    delete errors.email
   }
    else{
     delete e.email
   }
+  if(user.gender){
+    delete errors.gender
+  }
   if (user.phonenumber && (!/^\d{10}$/.test(user.phonenumber))){
      e.phonenumber ="Invalid Mobile number format"
+     delete errors.phonenumber
   }
    else{
     delete e.phonenumber
   }
  if (user.password && user.password.length < 6){
   e.password ="Password should be atleast 6 charachter"
+  delete errors.password
   }
    else{
     delete e.password
   }
 if (user.repassword && user.repassword.length < 6){
   e.repassword ="Password should be atleast 6 charachter"
+  delete errors.repassword
 }
  else{
     delete e.repassword
   }
 if (user.repassword && !(user.repassword == user.password) ){
   e.repassword = "Passwords do not match"
+
 }
  else{
     delete e.repassword
@@ -83,13 +92,38 @@ if (user.repassword && !(user.repassword == user.password) ){
 const fullname = computed(() => {
   return `${user.firstname}  ${user.lastname}`
 })
-
+function validate(){
+  if (user.firstname == "") {
+    errors.firstname = "First Name  is required"
+  }
+  if (!user.lastname) {
+    errors.lastname = "lastname is required"
+  }
+  if (user.gender == "") {
+    errors.gender = "Please select gender"
+  }  if (!user.email) {
+    errors.email = "Email is required"}
+    if (!user.phonenumber) {
+    errors.phonenumber = "Phone number is required"
+  }  if (!user.password) {
+    errors.password = "Password is required"
+     if (!user.repassword) {
+    errors.repassword = "Retype your password"}
+  }if (user.password !== user.repassword) {
+    errors.repassword = "Passwords do not match"}
+  
+}
 function submitform() {
   console.log(user)
   signtry.value++;
   if (Object.keys(validationError.value).length > 0) {
     return
   }
+  validate()
+if (Object.keys(errors).length > 0) {
+  return
+}
+
   signsuccess.value++
   console.log(fullname.value)
   userstore.addUser({
@@ -106,7 +140,6 @@ function submitform() {
   //   email: user.email,
   //   phonenumber: user.phonenumber
   // })
-
   resetform()
   showtable()
 }
@@ -122,6 +155,9 @@ function submitform() {
           <small v-if="validationError.firstname" class="error">
             {{ validationError.firstname }}
           </small>
+          <small v-if="errors.firstname" class="error">
+            {{ errors.firstname }}
+          </small>
         </div>
         <div class="field">
           <label for="lastname">Last Name</label>
@@ -129,20 +165,26 @@ function submitform() {
           <small v-if="validationError.lastname" class="error">
             {{ validationError.lastname }}
           </small>
+          <small v-if="errors.lastname" class="error">
+            {{ errors.lastname }}
+          </small>
         </div>
         <div class="field">
-          <label for="gende">Gender</label>
+          <label for="gender">Gender</label>
           <div class="radio-group">
             <input type="radio" name="gender" value="male" v-model="user.gender">Male
             <input type="radio" name="gender" value="female" v-model="user.gender">Female
           </div>
-          <small v-if="validationError.gender" class="error">{{ validationError.gen }}</small>
+          <small v-if="errors.gender" class="error">{{ errors.gender }}</small>
         </div>
         <div class="field">
           <label for="email">Email</label>
           <input type="email" id="email" name="email" v-model="user.email">
           <small v-if="validationError.email" class="error">
             {{ validationError.email }}
+          </small>
+          <small v-if="errors.email" class="error">
+            {{ errors.email }}
           </small>
         </div>
         <div class="field">
@@ -151,17 +193,22 @@ function submitform() {
           <small v-if="validationError.phonenumber" class="error">
             {{ validationError.phonenumber }}
           </small>
+          <small v-if="errors.phonenumber" class="error">
+            {{ errors.phonenumber }}
+          </small>
         </div>
 
         <div class="field">
           <label for="password">Enter Your Password</label>
           <input type="password" id="password" minlength="6" v-model="user.password">
           <small v-if="validationError.password" class="error">{{ validationError.password }}</small>
+          <small v-if="errors.password" class="error">{{ errors.password }}</small>
         </div>
         <div class="field">
           <label for="repassword">Confirm your password</label>
           <input type="password" id="repassword" minlength="6" v-model="user.repassword">
           <small v-if="validationError.repassword" class="error">{{ validationError.repassword }}</small>
+          <small v-if="errors.repassword" class="error">{{ errors.repassword }}</small>
         </div>
         <button type="reset">Reset</button>
         <button type="submit">Submit</button>
@@ -171,9 +218,11 @@ function submitform() {
   <div>
     <p id="nosignup">Number of People tried signing in {{ signtry }} and from it {{ signsuccess }} were successful </p>
   </div>
-
+<router-link to="/table">
+  <button type="button">View Users</button>
+</router-link>
   <!-- <div>{{ users }}</div> -->
-  <div v-show="show" class="data-table">
+  <div v-show=false class="data-table">
     <div id="usertabletitle">
       <h2>Last Sign In Users</h2>
     </div>
@@ -203,10 +252,10 @@ function submitform() {
 
 </template>
 
-<style scoped>
+<style scoped> 
 .page {
   min-height: 100vh;
-  display: flex;
+  display: flex ;
   align-items: center;
   justify-content: center;
   background: #fefeff;
