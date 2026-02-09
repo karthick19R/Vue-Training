@@ -18,14 +18,8 @@ const props = defineProps({
 const emit = defineEmits(['delete-row', 'update:modelValue'])
 const currentpage = ref(1)
 watch(
-  () => props.modelValue,
   () => {
     currentpage.value = 1
-  },
-  ()=>{
-    if (props.modelValue.length < 1){
-      dataAvailable = false
-    }
   }
 )
 const pagedRows = computed(() => {
@@ -36,16 +30,16 @@ const pagedRows = computed(() => {
 const totalPages = computed(() =>
   Math.ceil(props.rows.length / props.rowsPerPage)
 )
-function deleterow(rIndex) {
-  const confirmDelete = window.confirm(
-    'Are you sure you want to delete this record?'
-  )
-  if (!confirmDelete) return
-  const globalIndex =
-    (currentpage.value - 1) * props.rowsPerPage + rIndex
+// function deleterow(rIndex) {
+//   const confirmDelete = window.confirm(
+//     'Are you sure you want to delete this record?'
+//   )
+//   if (!confirmDelete) return
+//   const globalIndex =
+//     (currentpage.value - 1) * props.rowsPerPage + rIndex
 
-  emit('delete-row', globalIndex)
-}
+//   emit('delete-row', globalIndex)
+// }
 
 function nextPage() {
   if (currentpage.value < totalPages.value) {
@@ -57,7 +51,7 @@ function previousPage() {
     currentpage.value--
   }
 }
-const dataAvailable=ref(true)
+const dataAvailable = computed(() => props.rows.length > 0)
 
 </script>
 <template>
@@ -68,7 +62,7 @@ const dataAvailable=ref(true)
     placeholder="Search..."
     :value="modelValue"
     @input="emit('update:modelValue', $event.target.value)"
-    :class="{active :!dataAvailable}"
+    :class="{hidden :!dataAvailable}"
   />
     </div>
     <div class="table-wrapper">
@@ -88,15 +82,8 @@ const dataAvailable=ref(true)
             <td v-for="h in headers" :key="h">
               {{ Data[h] }}
             </td>
-            <td>
-              <td>
-                <slot name="actions" :index="rIndex">
-                  <button class="delete-btn" @click="deleterow(rIndex)">
-                    Remove
-                  </button>
-                </slot>
-              </td>
-
+            <td> 
+                <slot name="delete" :index="rIndex"></slot>
             </td>
           </tr>
         </tbody>
@@ -104,8 +91,8 @@ const dataAvailable=ref(true)
       </table>
 
       <div class="navbtn"> 
-        <button @click="previousPage":disabled="currentpage === 1">Previous Page</button>
-        <button @click="nextPage":disabled="currentpage === totalPages">Next Page</button>
+        <button @click="previousPage" :disabled="currentpage === 1">Previous Page</button>
+        <button @click="nextPage" :disabled="currentpage === totalPages">Next Page</button>
         
         </div>
       </div>
@@ -145,9 +132,10 @@ button {
   font-size: 13px;
   transition: background 0.2s ease, transform 0.1s ease;
 }
-.active{
-display: none;
+.hidden {
+  display: none;
 }
+
 .search {
   width: 260px;
   padding: 10px 14px;
@@ -185,7 +173,9 @@ display: none;
   font-weight: 600;
   font-size: 14px;
 }
-
+td{
+  color: #222;
+}
 .customtable td {
   padding: 14px;
   border-bottom: 1px solid #f0f0f0;
