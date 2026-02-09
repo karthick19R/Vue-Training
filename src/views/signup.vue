@@ -12,25 +12,26 @@ const user = reactive({
   password: "",
   repassword: ""
 })
+
 // const errors = reactive({})
 
-const show = ref(false)
+//const show = ref(false)
 // function showtable() {
 //   show.value = true
 // }
 // function removetable() {
 //   show.value = false
 // }
-function resetform() {
-  user.firstname = ""
-  user.lastname = ""
-  user.gender = ""
-  user.email = ""
-  user.phonenumber = ""
-  user.password = ""
-  user.repassword = ""
-  Object.keys(errors).forEach(key => delete errors[key])
-}
+// function resetform() {
+//   user.firstname = ""
+//   user.lastname = ""
+//   user.gender = ""
+//   user.email = ""
+//   user.phonenumber = ""
+//   user.password = ""
+//   user.repassword = ""
+//   Object.keys(errors).forEach(key => delete errors[key])
+// }
 
 // const validationError = computed(() => {
 //   const e = {}
@@ -126,7 +127,8 @@ function submitform(data) {
     username:`${data.firstname}  ${data.lastname}`,
     gender: data.gender,
     email: data.email,
-    phonenumber: data.phonenumber
+    phonenumber: data.phonenumber,
+    password :data.password
   }
   )
   console.log(userstore.users)
@@ -207,6 +209,9 @@ function submitform(data) {
  </div>
   <router-link to="/table">
     <button type="button">View Users</button>
+  </router-link>
+  <router-link to="/login">
+    <button type="button">Login</button>
   </router-link>
   <!-- <div>
     <p id="nosignup">Number of People tried signing in {{ signtry }} and from it {{ signsuccess }} were successful </p>

@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue';
 // import tablecomponent from '../components/tablecomponent.vue'
 import { userdetail } from '@/stores/score';
+
 const userstore =userdetail()
 const headers = computed(() => {
   if (userstore.users.length === 0) return []
@@ -14,7 +15,6 @@ function removeUser(index) {
     'Are you sure you want to delete this record?'
   )
   if (!confirmDelete) return
-
   userstore.removeUser(index)
 }
 

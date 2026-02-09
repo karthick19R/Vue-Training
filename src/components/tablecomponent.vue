@@ -1,5 +1,7 @@
 <script setup>
 import { ref, watch, computed } from 'vue'
+import { inject } from 'vue'
+const {theme,changetheme} = inject('themes')
 
 const props = defineProps({
   headers: Array,
@@ -14,7 +16,7 @@ const props = defineProps({
     default: 5
   }
 })
-
+console.log('Theme provider mounted, theme =', theme.value)
 const emit = defineEmits(['delete-row', 'update:modelValue'])
 const currentpage = ref(1)
 watch(
@@ -26,6 +28,9 @@ const pagedRows = computed(() => {
   const start = (currentpage.value - 1) * props.rowsPerPage
   const end = start + props.rowsPerPage
   return props.rows.slice(start, end)
+})
+const displytheme = computed(()=>{
+  return theme.value === 'dark' ? 'dark-container':'light-container'
 })
 const totalPages = computed(() =>
   Math.ceil(props.rows.length / props.rowsPerPage)
@@ -55,7 +60,8 @@ const dataAvailable = computed(() => props.rows.length > 0)
 
 </script>
 <template>
-  <div class="container">
+  <div><button type="button" @click="changetheme">theme</button></div>
+  <div :class="displytheme">
     <div class="search-wrapper">
        <input
     type="text"
@@ -102,14 +108,26 @@ const dataAvailable = computed(() => props.rows.length > 0)
 </template>
 
 <style scoped>
-.container {
+.dark-container {
+  background-color: #19243d; 
   width: 100%;
   max-width: 900px;
   margin: 40px auto;
-  padding: 0 16px;
+  padding: 16px;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #e5e7eb;
+  border-radius: 12px;
 }
 
+.light-container {
+width: 100%;
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 16px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #e5e7eb;
+  border-radius: 12px
+}
 .search-wrapper {
   display: flex;
   justify-content: flex-end;

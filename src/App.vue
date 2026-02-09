@@ -1,13 +1,19 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+import {RouterView } from 'vue-router'
+import { provide,ref } from 'vue';
+const theme = ref('dark')
+function changetheme(){
+  theme.value = theme.value === 'dark'?'light':'dark'
+}
+provide('themes',{
+  theme,changetheme
+})
 </script>
 
 <template>
   <header>
-  
   </header>
-  <RouterView />
+  <RouterView/>
 </template>
 <style scoped>
 </style>

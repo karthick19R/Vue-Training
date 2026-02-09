@@ -1,26 +1,22 @@
 <script setup>
 import { computed, reactive, ref } from 'vue'
-const props =defineProps({
-    modelValue :{
-        type :Object,
-        required :true
-    }
-})
-const signtry = ref(0)
-const signsuccess = ref(0)
-const emit = defineEmits(['update:modelValue','submit'])
+import vCapitalize from '../custom/directive.js'
+import { counter } from '@/custom/composable.js'
+
+const value= defineModel()
+const emit = defineEmits(['submit'])
+const signtry = counter()
+const signsuccess = counter()
 const errors = reactive({})
 // const fullname = computed(() => {
 //   return `${user.firstname}  ${user.lastname}`
 // })
-const value = computed({
-    get(){
-        return props.modelValue
-    },
-    set(val){
-        emit('update:modelValue',val)
-    }
-})
+// custom directive
+const vFocus = {
+  mounted(el){
+    el.focus()
+  }
+}
 function validate() {
     Object.keys(errors).forEach(key => delete errors[key])
   if (value.value.firstname == "" ) {
@@ -61,7 +57,7 @@ function resetform() {
 // }
 function submitform() {
  // console.log(user)
-  signtry.value++;
+  signtry.increment();
   // if (Object.keys(validationError.value).length > 0) {
   //   return
   // }
@@ -69,7 +65,7 @@ function submitform() {
   if (Object.keys(errors).length > 0) {
     return
   }
-  signsuccess.value++
+  signsuccess.increment()
   emit('submit',value.value)
   resetform()
 }
@@ -82,7 +78,7 @@ function submitform() {
         <h3 class="title">Sign Up Form</h3>
         <div class="field">
           <label for="firstname">First Name</label>
-          <input type="text" id="firstname" name="firstname" v-model="value.firstname" :style="{ borderColor: errors.firstname ? 'red' : '#ccc'}">
+          <input type="text" v-focus  id="firstname" name="firstname" v-model="value.firstname"  v-capitalize :style="{ borderColor: errors.firstname ? 'red' : '#ccc'}">
           <!-- <small v-if="validationError.firstname" class="error">
             {{ validationError.firstname }}
           </small> -->
@@ -92,7 +88,7 @@ function submitform() {
         </div>
         <div class="field">
           <label for="lastname">Last Name</label>
-          <input type="text" id="lastname" name="lastname" v-model="value.lastname" :style="{ borderColor: errors.lastname ? 'red' : '#ccc'}">
+          <input type="text" id="lastname" name="lastname" v-model="value.lastname"  v-capitalize :style="{ borderColor: errors.lastname ? 'red' : '#ccc'}">
           <!-- <small v-if="validationError.lastname" class="error">
             {{ validationError.lastname }}
           </small> -->
@@ -110,7 +106,7 @@ function submitform() {
         </div>
         <div class="field">
           <label for="email">Email</label>
-          <input type="email" id="email" name="email" v-model="value.email" :style="{ borderColor: errors.email ? 'red' : '#ccc'}">
+          <input type="email"  id="email" name="email" v-model="value.email" :style="{ borderColor: errors.email ? 'red' : '#ccc'}">
           <!-- <small v-if="validationError.email" class="error">
             {{ validationError.email }}
           </small> -->
@@ -120,7 +116,7 @@ function submitform() {
         </div>
         <div class="field">
           <label for="phonenumber">Phone Number</label>
-          <input type="text" id="phonenumber" name="phonenumber" v-model="value.phonenumber" :style="{ borderColor: errors.phonenumber ? 'red' : '#ccc'}">
+          <input type="text"  id="phonenumber" name="phonenumber" v-model="value.phonenumber" :style="{ borderColor: errors.phonenumber ? 'red' : '#ccc'}">
           <!-- <small v-if="validationError.phonenumber" class="error">
             {{ validationError.phonenumber }}
           </small> -->
@@ -131,20 +127,20 @@ function submitform() {
 
         <div class="field">
           <label for="password">Enter Your Password</label>
-          <input type="password" id="password" minlength="6" v-model="value.password" :style="{ borderColor: errors.password ? 'red' : '#ccc'}">
+          <input type="password"  id="password" minlength="6" v-model="value.password" :style="{ borderColor: errors.password ? 'red' : '#ccc'}">
           <!-- <small v-if="validationError.password" class="error">{{ validationError.password }}</small> -->
           <small v-if="errors.password" class="error">{{ errors.password }}</small>
         </div>
         <div class="field">
           <label for="repassword">Confirm your password</label>
-          <input type="password" id="repassword" minlength="6" v-model="value.repassword" :style="{ borderColor: errors.repassword ? 'red' : '#ccc'}">
+          <input type="password"  id="repassword" minlength="6" v-model="value.repassword" :style="{ borderColor: errors.repassword ? 'red' : '#ccc'}">
           <!-- <small v-if="validationError.repassword" class="error">{{ validationError.repassword }}</small> -->
           <small v-if="errors.repassword" class="error">{{ errors.repassword }}</small>
         </div>
         <button type="reset">Reset</button>
         <button type="submit">Submit</button>
       </div>
-        <br><p id="nosignup">Number of People tried signing in {{ signtry }} and from it {{ signsuccess }} were successful </p>
+        <br><p id="nosignup">Number of People tried signing in {{ signtry.count }} and from it {{ signsuccess.count }} were successful </p>
     </form>
       </div>
 
