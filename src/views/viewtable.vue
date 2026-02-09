@@ -9,10 +9,15 @@ const headers = computed(() => {
 })
 const search =ref('')
 console.log(userstore.users)
+function removeUser(index) {
+  const confirmDelete = window.confirm(
+    'Are you sure you want to delete this record?'
+  )
+  if (!confirmDelete) return
 
-function removeUser(index){
   userstore.removeUser(index)
 }
+
 const rows=computed(()=>{
   if (search.value == ''){return userstore.users}
   return userstore.users.filter(row=>{
@@ -22,21 +27,25 @@ const rows=computed(()=>{
 
 </script>
 <template>
-    <h1 class="h1">User Table</h1>
+    <h1>User Table</h1>
     <!-- <tablecomponent :headers="headers" :rows="rows"  @delete-row="removeUser" @search-data="search = $event" /> -->
     <tablecomponent :headers="headers" :rows="rows"  @delete-row="removeUser"  v-model="search">
-      <template #actions="{ index }">
-      <button class="delete-btn" @click="removeUser(index)">
+      <!-- <template #actions="{ index }"> -->
+      <!-- <button class="delete-btn" @click="removeUser(index)">
         Remove
-      </button>
-    </template>
+      </button> --> 
+      <template #delete="{index}">
+      <button @click="removeUser(index)">remove</button>
+      </template>
+    <!-- </template> -->
     </tablecomponent>
     <router-link to="/signup">
   <button type="button">Go To Forms</button>
 </router-link>
 </template>
 <style>
-.h1 {
+h1 {
+  color: rgb(10, 10, 10);
   font-weight: 500;
   margin-bottom: 16px;
 }
