@@ -1,23 +1,32 @@
 <script setup>
 import { computed, ref } from 'vue';
 // import tablecomponent from '../components/tablecomponent.vue'
-import { userdetail } from '@/stores/score';
+import dialoguebox from '@/components/dialoguebox.vue'
+import { useUserDetails } from '@/stores/score';
 
-const userstore =userdetail()
+const userstore =useUserDetails()
 const headers = computed(() => {
   if (userstore.users.length === 0) return []
   return Object.keys(userstore.users[0])
 })
+const showdialoguebox = ref(false)
 const search =ref('')
+const deleteid = ref()
 console.log(userstore.users)
 function removeUser(index) {
-  const confirmDelete = window.confirm(
-    'Are you sure you want to delete this record?'
-  )
-  if (!confirmDelete) return
-  userstore.removeUser(index)
-}
+  deleteid.value=index
+  // const confirmDelete = window.confirm(
+  //   'Are you sure you want to delete this record?'
+  // )
+  // if (!confirmDelete) return
+  showdialoguebox.value=true
 
+  // userstore.removeUser(index)
+}
+function confirmUpdate(){
+    userstore.removeUser(deleteid)
+    router.push('/table')
+}
 const rows=computed(()=>{
   if (search.value == ''){return userstore.users}
   return userstore.users.filter(row=>{
@@ -26,38 +35,44 @@ const rows=computed(()=>{
 })
 
 </script>
-<template>
-    <h1>User Table</h1>
-    <!-- <tablecomponent :headers="headers" :rows="rows"  @delete-row="removeUser" @search-data="search = $event" /> -->
-    <tablecomponent :headers="headers" :rows="rows"  @delete-row="removeUser"  v-model="search">
-      <!-- <template #actions="{ index }"> -->
-      <!-- <button class="delete-btn" @click="removeUser(index)">
-        Remove
-      </button> --> 
-      <template #delete="{index}">
-      <button @click="removeUser(index)">remove</button>
-      </template>
-    <!-- </template> -->
-    </tablecomponent>
-    <router-link to="/signup">
-  <button type="button">Go To Forms</button>
-</router-link>
-</template>
-<style>
-h1 {
-  color: rgb(10, 10, 10);
-  font-weight: 500;
-  margin-bottom: 16px;
-}
-button{
-  background: #ff5c5c;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 13px;
-  transition: background 0.2s ease, transform 0.1s ease;
-}
 
+<template>
+  <div class="table-page">
+    <v-container class="py-6">
+      <v-card elevation="2" class="table-card">
+        <v-card-title class="text-center text-h6 bg-primary text-white py-4">
+          Users Directory
+        </v-card-title>
+
+        <v-card-text class="pa-6">
+          <tablecomponent :headers="headers" :rows="rows" @delete-row="removeUser" v-model="search">
+            <template #delete="{ index }">
+              <v-btn size="small" color="error" variant="tonal" @click="removeUser(index)">
+                Remove
+              </v-btn>
+            </template>
+          </tablecomponent>
+        </v-card-text>
+
+        <v-divider></v-divider>
+
+        <v-card-text class="text-center pa-4">
+          <v-btn color="primary" variant="outlined" @click="$router.back()">
+            <v-icon left>mdi-arrow-left</v-icon>
+            Go Back
+          </v-btn>
+        </v-card-text>
+      </v-card>
+    </v-container>
+
+    <dialoguebox v-model="showdialoguebox" @yes="confirmUpdate">
+      <template #title>Delete User</template>
+      <template #message>Are you sure you want to delete this user?</template>
+    </dialoguebox>
+  </div>
+</template>
+
+<style scoped>
+.table-page { background-color:#f5f5f5; height:100vh; overflow-y:auto; }
+.table-card { border-radius:8px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
 </style>

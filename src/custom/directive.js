@@ -1,5 +1,5 @@
 const vcapitalize = {
-  mounted : (el)=> {
+  mounted(el){
     el.addEventListener('input', () => {
       if (!el.value) return
       console.log("inside vcaptilize")

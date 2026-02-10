@@ -1,9 +1,7 @@
 <script setup>
-import { userdetail } from '@/stores/score'
+import { useUserDetails } from '@/stores/score'
 
-const store = userdetail()
-console.log(store.users)
-console.log(store.currentuser)
+const store = useUserDetails()
 const userId = store.currentuser.id
 console.log(userId)
 </script>
@@ -15,15 +13,26 @@ console.log(userId)
       variant="outlined"
       :to="`/user/edit/${userId}`"
       :disabled="!userId"
+      class="pa-5"
     >
       Edit User
     </v-btn>
     <v-btn
+    color="primary"
+    variant="elevated"
+    :to="`/table`"
+    class="pa-5"
+>View All Users
+</v-btn>
+  
+    <v-btn
       color="error"
       variant="tonal"
       to="/logout"
+      class="pa-5"
     >
       Logout
     </v-btn>
+
   </v-container>
 </template>

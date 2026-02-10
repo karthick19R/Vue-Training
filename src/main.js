@@ -1,5 +1,5 @@
 import './assets/main.css'
-
+import vcapitalize from './custom/directive'
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import { createVuetify } from 'vuetify'
@@ -11,6 +11,7 @@ const vuetify = createVuetify()
 app.use(createPinia())
 app.use(router)
 app.use(vuetify)
+app.directive('capitalize',vcapitalize)
 app.component('tablecomponent',tablecomponent)
 // .component()
 // chaining to apply more componenet

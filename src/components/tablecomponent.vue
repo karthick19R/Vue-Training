@@ -20,10 +20,12 @@ console.log('Theme provider mounted, theme =', theme.value)
 const emit = defineEmits(['delete-row', 'update:modelValue'])
 const currentpage = ref(1)
 watch(
+  () => props.rows,
   () => {
     currentpage.value = 1
   }
 )
+
 const pagedRows = computed(() => {
   const start = (currentpage.value - 1) * props.rowsPerPage
   const end = start + props.rowsPerPage
@@ -67,6 +69,7 @@ const dataAvailable = computed(() => props.rows.length > 0)
     type="text"
     placeholder="Search..."
     :value="modelValue"
+    v-capitalize
     @input="emit('update:modelValue', $event.target.value)"
     :class="{hidden :!dataAvailable}"
   />
@@ -80,6 +83,7 @@ const dataAvailable = computed(() => props.rows.length > 0)
               {{ h.toUpperCase() }}
             </th>
             <th>Remove</th>
+            <th>Edit</th>
           </tr>
         </thead>
 
@@ -90,6 +94,16 @@ const dataAvailable = computed(() => props.rows.length > 0)
             </td>
             <td> 
                 <slot name="delete" :index="rIndex"></slot>
+            </td>
+            <td>
+              <v-btn
+                color="primary"
+                variant="outlined"
+                :to="`/user/edit/${Data.id}`"
+                :disabled="!Data.id"
+                >
+                Edit User{{ Data.id }}
+              </v-btn>
             </td>
           </tr>
         </tbody>
