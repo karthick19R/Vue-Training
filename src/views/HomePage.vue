@@ -1,12 +1,29 @@
 <script setup>
+import { userdetail } from '@/stores/score'
 
+const store = userdetail()
+console.log(store.users)
+console.log(store.currentuser)
+const userId = store.currentuser.id
+console.log(userId)
 </script>
+
 <template>
- <router-link to="/login">
-    <button>Login Form</button>
-  </router-link>
-  <router-link to="/signup">
-    <button type="button">SignUp Form</button>
-  </router-link>
+  <v-container class="d-flex ga-4">
+    <v-btn
+      color="primary"
+      variant="outlined"
+      :to="`/user/edit/${userId}`"
+      :disabled="!userId"
+    >
+      Edit User
+    </v-btn>
+    <v-btn
+      color="error"
+      variant="tonal"
+      to="/logout"
+    >
+      Logout
+    </v-btn>
+  </v-container>
 </template>
-<style scoped></style>

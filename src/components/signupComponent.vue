@@ -8,10 +8,6 @@ const emit = defineEmits(['submit'])
 const signtry = counter()
 const signsuccess = counter()
 const errors = reactive({})
-// const fullname = computed(() => {
-//   return `${user.firstname}  ${user.lastname}`
-// })
-// custom directive
 const vFocus = {
   mounted(el){
     el.focus()
@@ -62,6 +58,7 @@ function submitform() {
   //   return
   // }
   validate() 
+  console.log(errors)
   if (Object.keys(errors).length > 0) {
     return
   }
@@ -72,6 +69,103 @@ function submitform() {
 </script>
 
 <template>
+  <v-container class="d-flex justify-center">
+    <v-card
+      width="420"
+      class="pa-6"
+      elevation="3"
+    >
+      <v-card-title class="text-center text-h6">
+        SIGN UP
+      </v-card-title>
+
+      <v-divider class="mb-4" />
+
+      <v-form @submit.prevent="submitform">
+        <v-text-field
+          v-capitalize
+          label="First Name"
+          v-model="value.firstname"
+          :error-messages="errors.firstname"
+        >
+      </v-text-field>
+
+        <v-text-field
+          label="Last Name"
+          v-model="value.lastname"
+          v-capitalize
+          :error-messages="errors.lastname"
+        />
+        <v-radio-group
+        label="Gender"
+        v-model="value.gender"
+        :error-messages="errors.gender"
+        inline
+        density="compact"
+        color="primary"
+        >
+        <v-radio label="Male" value="male"></v-radio>
+        <v-radio label="Female" value="female"></v-radio>
+        </v-radio-group>
+
+        <v-text-field
+          label="Phone Number"
+          v-model="value.phonenumber"
+          :error-messages="errors.phonenumber"
+        />
+
+        <v-text-field
+          label="Email"
+          type="email"
+          v-model="value.email"
+          :error-messages="errors.email"
+        />
+
+        <v-text-field
+          label="Password"
+          type="password"
+          v-model="value.password"
+          :error-messages="errors.password"
+        />
+
+        <v-text-field
+          label="Confirm Password"
+          type="password"
+          v-model="value.repassword"
+          :error-messages="errors.repassword"
+        />
+        <v-btn
+          color="primary"
+          block
+          type="submit"
+          class="mt-4"
+        >
+          Submit
+        </v-btn>
+
+        <v-btn
+          variant="outlined"
+          block
+          class="mt-2"
+          @click="resetform"
+        >
+          Reset
+        </v-btn>
+      </v-form>
+
+      <v-alert
+        type="info"
+        variant="tonal"
+        class="mt-4"
+      >
+        Number of Users : {{ signtry.count }} tried, {{ signsuccess.count }} successful
+      </v-alert>
+    </v-card>
+  </v-container>
+</template>
+
+<!-- 
+<template>
   <div class="page">
     <form @submit.prevent="submitform" @reset.prevent="resetform">
       <div class="form">
@@ -79,9 +173,9 @@ function submitform() {
         <div class="field">
           <label for="firstname">First Name</label>
           <input type="text" v-focus  id="firstname" name="firstname" v-model="value.firstname"  v-capitalize :style="{ borderColor: errors.firstname ? 'red' : '#ccc'}">
-          <!-- <small v-if="validationError.firstname" class="error">
+           <small v-if="validationError.firstname" class="error">
             {{ validationError.firstname }}
-          </small> -->
+          </small> 
           <small v-if="errors.firstname" class="error">
             {{ errors.firstname }}
           </small>
@@ -89,9 +183,9 @@ function submitform() {
         <div class="field">
           <label for="lastname">Last Name</label>
           <input type="text" id="lastname" name="lastname" v-model="value.lastname"  v-capitalize :style="{ borderColor: errors.lastname ? 'red' : '#ccc'}">
-          <!-- <small v-if="validationError.lastname" class="error">
+          <small v-if="validationError.lastname" class="error">
             {{ validationError.lastname }}
-          </small> -->
+          </small>
           <small v-if="errors.lastname" class="error">
             {{ errors.lastname }}
           </small>
@@ -107,9 +201,9 @@ function submitform() {
         <div class="field">
           <label for="email">Email</label>
           <input type="email"  id="email" name="email" v-model="value.email" :style="{ borderColor: errors.email ? 'red' : '#ccc'}">
-          <!-- <small v-if="validationError.email" class="error">
+          <small v-if="validationError.email" class="error">
             {{ validationError.email }}
-          </small> -->
+          </small>
           <small v-if="errors.email" class="error">
             {{ errors.email }}
           </small>
@@ -117,9 +211,9 @@ function submitform() {
         <div class="field">
           <label for="phonenumber">Phone Number</label>
           <input type="text"  id="phonenumber" name="phonenumber" v-model="value.phonenumber" :style="{ borderColor: errors.phonenumber ? 'red' : '#ccc'}">
-          <!-- <small v-if="validationError.phonenumber" class="error">
+          <small v-if="validationError.phonenumber" class="error">
             {{ validationError.phonenumber }}
-          </small> -->
+          </small> 
           <small v-if="errors.phonenumber" class="error">
             {{ errors.phonenumber }}
           </small>
@@ -128,13 +222,13 @@ function submitform() {
         <div class="field">
           <label for="password">Enter Your Password</label>
           <input type="password"  id="password" minlength="6" v-model="value.password" :style="{ borderColor: errors.password ? 'red' : '#ccc'}">
-          <!-- <small v-if="validationError.password" class="error">{{ validationError.password }}</small> -->
+          !-- <small v-if="validationError.password" class="error">{{ validationError.password }}</small> 
           <small v-if="errors.password" class="error">{{ errors.password }}</small>
         </div>
         <div class="field">
           <label for="repassword">Confirm your password</label>
           <input type="password"  id="repassword" minlength="6" v-model="value.repassword" :style="{ borderColor: errors.repassword ? 'red' : '#ccc'}">
-          <!-- <small v-if="validationError.repassword" class="error">{{ validationError.repassword }}</small> -->
+          <small v-if="validationError.repassword" class="error">{{ validationError.repassword }}</small> 
           <small v-if="errors.repassword" class="error">{{ errors.repassword }}</small>
         </div>
         <button type="reset">Reset</button>
@@ -145,9 +239,9 @@ function submitform() {
       </div>
 
  
-  <!-- <div>{{ users }}</div> -->
-  <!-- <div v-show=false class="data-table"> -->
-    <!-- <div id="usertabletitle">
+  <div>{{ users }}</div> 
+ <div v-show=false class="data-table"> 
+    <div id="usertabletitle">
       <h2>Last Sign In Users</h2>
     </div>
     <div>
@@ -171,10 +265,10 @@ function submitform() {
         </tbody>
       </table>
       <button @click="removetable">close</button>
-    </div> -->
-  <!-- </div> -->
+    </div>
+  </div> 
 
-</template>
+</template> 
 <style scoped>
 .page {
   min-height: 100vh;
@@ -313,4 +407,4 @@ th {
   overflow: hidden;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
-</style>
+</style> -->

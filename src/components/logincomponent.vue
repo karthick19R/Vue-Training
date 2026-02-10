@@ -2,9 +2,11 @@
 
 const credentials = defineModel()
 const emit = defineEmits(['login'])
+//variant: "elevated" | "flat" | "outlined" | "plain" | "text" | "tonal"
+
 </script>
 <<template>
-  <v-card variant="elevated" width="400" class="pa-4">
+  <v-card variant="elevated" width="400" class="pa-5">
     <v-card-title class="text-center">
       Login
     </v-card-title>
@@ -21,7 +23,7 @@ const emit = defineEmits(['login'])
       color="primary"
       block
       class="mt-4"
-      @click="submitForm"
+      @click="emit('login')"
     >
       Login
     </v-btn>

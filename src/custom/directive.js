@@ -1,8 +1,8 @@
 const vcapitalize = {
-  mounted(el) {
+  mounted : (el)=> {
     el.addEventListener('input', () => {
       if (!el.value) return
-
+      console.log("inside vcaptilize")
       const formatted =
         el.value.charAt(0).toUpperCase() +
         el.value.slice(1).toLowerCase()

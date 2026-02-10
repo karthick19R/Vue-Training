@@ -2,8 +2,9 @@
 import Logincomponent from '@/components/logincomponent.vue';
 import { reactive } from 'vue';
 import { userdetail } from '@/stores/score'
+import { useRouter } from 'vue-router';
 const userstore = userdetail()
-
+const router =useRouter()
 const credentials = reactive({
     'email':'',
     'password':''
@@ -19,7 +20,9 @@ function login(){
     console.log("credentials")
     if(result.password !== credentials.password) return alert("Invalid Credentials")
     console.log("Inside login",result)
-    return alert(`welcome ${result.username}`)
+    alert(`welcome ${result.username}`)
+    userstore.loggeduser(result)
+    router.push('/home')
 }
 </script>
 <template>
