@@ -58,7 +58,6 @@ const rows=computed(()=>{
 
         <v-card-text class="text-center pa-4">
           <v-btn color="primary" variant="outlined" @click="$router.back()">
-            <v-icon left>mdi-arrow-left</v-icon>
             Go Back
           </v-btn>
         </v-card-text>

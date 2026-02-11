@@ -5,8 +5,8 @@ export const useUserDetails = defineStore('user', () => {
   const currentuser =reactive({
     data : {}
   })
-  const id = ref(1)
-  const users = reactive([])
+  const id = ref(2)
+  const users = reactive([{id:1,username:"karthick",email:"karthick@example.com",gender:"male",role:"Admin",phonenumber:"9876543211",password:"karthick@example.com"}])
 
   function addUser(data) {
     console.log(data, 'Checking store')
