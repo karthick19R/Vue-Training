@@ -60,185 +60,160 @@ function previousPage() {
 }
 const dataAvailable = computed(() => props.rows.length > 0)
 
+const filteredHeaders = computed(() => {
+  if (!props.headers) return []
+  return props.headers
+    .filter(h => h !== 'password')
+    .map(h => ({
+      title: h.toUpperCase(),
+      key: h,
+      align: 'start'
+    }))
+    .concat([
+      { title: 'REMOVE', key: 'delete', align: 'center', sortable: false },
+      { title: 'ACTIONS', key: 'actions', align: 'center', sortable: false }
+    ])
+})
+
 </script>
 <template>
-  <div><button type="button" @click="changetheme">theme</button></div>
-  <div :class="displytheme">
-    <div class="search-wrapper">
-       <input
-    type="text"
-    placeholder="Search..."
-    :value="modelValue"
-    v-capitalize
-    @input="emit('update:modelValue', $event.target.value)"
-    :class="{hidden :!dataAvailable}"
-  />
-    </div>
-    <div class="table-wrapper">
-      <div v-if="rows.length" >
-      <table class="customtable">
-        <thead>
-          <tr>
-            <th v-for="h in headers" :key="h">
-              {{ h.toUpperCase() }}
-            </th>
-            <th>Remove</th>
-            <th>Edit</th>
-          </tr>
-        </thead>
+  <v-container fluid class="py-8 px-4">
+    <!-- Header with Title and Theme Button -->
+    <!-- <v-row class="mb-6 align-center">
+      <v-col cols="12" sm="6">
+        <h1 class="text-h5 font-weight-bold">Users Table</h1>
+      </v-col> 
+      <v-col cols="12" sm="6" class="d-flex justify-end">
+        <v-btn
+          @click="changetheme"
+          icon
+          variant="tonal"
+          color="primary"
+          size="large"
+        >
+          <v-icon v-if="theme === 'light'">mdi-moon-waning-crescent</v-icon>
+          <v-icon v-else>mdi-white-balance-sunny</v-icon>
+        </v-btn>
+      </v-col>
+    </v-row> -->
 
-        <tbody>
-          <tr v-for="(Data, rIndex) in pagedRows" :key="rIndex">
-            <td v-for="h in headers" :key="h">
-              {{ Data[h] }}
-            </td>
-            <td> 
-                <slot name="delete" :index="rIndex"></slot>
-            </td>
-            <td>
+    <v-row class="mb-6">
+      <v-col cols="12" sm="4">
+        <v-text-field
+          :value="modelValue"
+          label="Search"
+          prepend-inner-icon="mdi-magnify"
+          variant="outlined"
+          density="comfortable"
+          @update:modelValue="emit('update:modelValue', $event)"
+          clearable
+        ></v-text-field>
+      </v-col>
+    </v-row>
+
+    <v-card elevation="2" class="rounded-lg">
+      <v-card-text class="pa-0">
+        <div v-if="rows.length" class="table-container">
+          <v-data-table
+            :headers="filteredHeaders"
+            :items="pagedRows"
+            :items-per-page="rowsPerPage"
+            hide-default-footer
+            class="simple-table"
+          >
+            <template #item.delete="{ item, index }">
+              <slot name="delete" :index="(currentpage - 1) * rowsPerPage + index"></slot>
+            </template>
+            
+            <template #item.actions="{ item }">
               <v-btn
+                size="small"
                 color="primary"
-                variant="outlined"
-                :to="`/user/edit/${Data.id}`"
-                :disabled="!Data.id"
-                >
-                Edit User{{ Data.id }}
+                variant="text"
+                :to="`/user/edit/${item.id}`"
+                :disabled="!item.id"
+              >
+                Edit
               </v-btn>
-            </td>
-          </tr>
-        </tbody>
-        
-      </table>
-
-      <div class="navbtn"> 
-        <button @click="previousPage" :disabled="currentpage === 1">Previous Page</button>
-        <button @click="nextPage" :disabled="currentpage === totalPages">Next Page</button>
-        
+            </template>
+          </v-data-table>
         </div>
-      </div>
-      <p v-else class="empty">{{ emptyText }}</p>
-    </div>
-  </div>
+
+        <v-empty-state
+          v-else
+          icon="mdi-information"
+          title="No Data"
+          text="No users found"
+          class="pa-8"
+        ></v-empty-state>
+      </v-card-text>
+
+      <v-divider></v-divider>
+      <v-card-text class="pa-4 d-flex align-center justify-center">
+        <v-btn
+          @click="previousPage"
+          :disabled="currentpage === 1"
+          variant="tonal"
+          color="primary"
+          class="mr-4"
+        >
+          Previous
+        </v-btn>
+        <span class="mx-4 font-weight-medium">Page {{ currentpage }} of {{ totalPages }}</span>
+        <v-btn
+          @click="nextPage"
+          :disabled="currentpage === totalPages"
+          variant="tonal"
+          color="primary"
+          class="ml-4"
+        >
+          Next
+        </v-btn>
+      </v-card-text>
+    </v-card>
+  </v-container>
 </template>
 
 <style scoped>
-.dark-container {
-  background-color: #19243d; 
-  width: 100%;
-  max-width: 900px;
-  margin: 40px auto;
-  padding: 16px;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  color: #e5e7eb;
-  border-radius: 12px;
+.table-container {
+  overflow-x: auto;
 }
 
-.light-container {
-width: 100%;
-  max-width: 900px;
-  margin: 40px auto;
-  padding: 16px;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  color: #e5e7eb;
-  border-radius: 12px
-}
-.search-wrapper {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 16px;
-}
-.navbtn{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 3%;
-}
-button {
-  background: #ff5c5c;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  margin: auto;
-  font-size: 13px;
-  transition: background 0.2s ease, transform 0.1s ease;
-}
-.hidden {
-  display: none;
+.simple-table {
+  background: transparent !important;
 }
 
-.search {
-  width: 260px;
-  padding: 10px 14px;
+.simple-table :deep(thead) {
+  background: transparent !important;
+}
+
+.simple-table :deep(thead th) {
+  background: #f5f5f5 !important;
+  color: #333 !important;
+  font-weight: 600 !important;
+  border-bottom: 2px solid #ddd !important;
+  padding: 12px !important;
+}
+
+.simple-table :deep(tbody tr) {
+  border-bottom: 1px solid #eee !important;
+  transition: background-color 0.2s ease;
+}
+
+.simple-table :deep(tbody tr:hover) {
+  background: #fafafa !important;
+}
+
+.simple-table :deep(td) {
+  padding: 12px !important;
+  color: #333 !important;
+}
+
+:deep(.v-data-table__wrapper) {
   border-radius: 8px;
-  border: 1px solid #ddd;
-  font-size: 14px;
-  transition: all 0.2s ease;
 }
 
-.search:focus {
-  outline: none;
-  border-color: #e4a095;
-  box-shadow: 0 0 0 3px rgba(228, 160, 149, 0.2);
-}
-
-.table-wrapper {
-  display: flex;
-  justify-content: center;
-}
-
-.customtable {
-  width: 100%;
-  border-collapse: collapse;
-  background: #fff;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
-}
-
-.customtable th {
-  padding: 14px;
-  background: #e4a095;
-  color: #222;
-  text-align: center;
-  font-weight: 600;
-  font-size: 14px;
-}
-td{
-  color: #222;
-}
-.customtable td {
-  padding: 14px;
-  border-bottom: 1px solid #f0f0f0;
-  font-size: 14px;
-}
-
-.customtable tbody tr:hover {
-  background: #fafafa;
-} 
-
-.delete-btn {
-  background: #ff5c5c;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 13px;
-  transition: background 0.2s ease, transform 0.1s ease;
-}
-.delete-btn:hover {
-  background: #e54848;
-  transform: translateY(-1px);
-}
-.delete-btn:active {
-  transform: translateY(0);
-}
-.empty {
-  margin-top: 20px;
-  color: #777;
-  font-style: italic;
-  text-align: center;
+:deep(.v-card) {
+  border-radius: 8px !important;
 }
 </style>

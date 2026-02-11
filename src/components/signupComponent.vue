@@ -32,12 +32,12 @@ function validate() {
   if (!value.value.phonenumber) {
     errors.phonenumber = "Phone number is required"
   } 
-  // if (!value.value.password) {
-  //   errors.password = "Password is required"
-  //   if (!value.value.repassword) {
-  //     errors.repassword = "Retype your password"
-  //   }
-  // } 
+  if (!value.value.password) {
+    errors.password = "Password is required"
+    if (!value.value.repassword) {
+      errors.repassword = "Retype your password"
+    }
+  } 
   if (value.value.password !== value.value.repassword) {
     errors.repassword = "Passwords do not match"
   }

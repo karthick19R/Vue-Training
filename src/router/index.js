@@ -33,6 +33,10 @@ const router = createRouter({
       path:"/user/edit/:id",
       name:'edituser',
       component:() => import ('../views/editpage.vue')
+    },{
+     path:"/checkout",
+      name:'checkout',
+      component:() => import ('../views/checkout.vue')
     }
   ],
 })

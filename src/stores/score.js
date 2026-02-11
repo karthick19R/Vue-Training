@@ -10,7 +10,13 @@ export const useUserDetails = defineStore('user', () => {
 
   function addUser(data) {
     console.log(data, 'Checking store')
-    users.push({id:id.value++ , ...data})
+    users.push({id:id.value++ ,email:data.email,
+              gender: data.gender,
+              password: data.password,
+              phonenumber:data.phonenumber,
+              role: data.role,
+              username:data.username
+              })
     console.log("users",users)
   }
 

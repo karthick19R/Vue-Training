@@ -1,27 +1,33 @@
 <script setup>
 import Logincomponent from '@/components/logincomponent.vue';
-import { reactive } from 'vue';
+import { reactive,ref } from 'vue';
 import { useUserDetails } from '@/stores/score'
 import { useRouter } from 'vue-router';
+import dialoguebox from '@/components/dialoguebox.vue'
+const showdialoguebox = ref(false)
+
 const userstore = useUserDetails()
 const router =useRouter()
 const credentials = reactive({
     'email':'',
     'password':''
 })
-
+const result =ref({})
 function login(){
     console.log(userstore.users)
     console.log(credentials)
-    const result = userstore.users.find((user)=>user.email===credentials.email)
-    console.log("result",result)
+    result.value = userstore.users.find((user)=>user.email===credentials.email)
+    console.log("result",result.value)
     console.log("user not found")
-    if(!result) return alert("User Not Found")
+    if(!result.value) return alert("User Not Found")
     console.log("credentials")
-    if(result.password !== credentials.password) return alert("Invalid Credentials")
-    console.log("Inside login",result)
-    alert(`welcome ${result.username}`)
-    userstore.loggeduser(result)
+    if(result.value.password !== credentials.password) return alert("Invalid Credentials")
+    console.log("Inside login",result.value)
+    showdialoguebox.value = true
+   
+}
+function confirmcreate() {
+   userstore.loggeduser(result.value)
     router.push('/home')
 }
 </script>
@@ -35,6 +41,14 @@ function login(){
 
                 <v-card-text class="pa-6 d-flex justify-center align-center">
                     <Logincomponent v-model="credentials" @login="login" />
+                    <dialoguebox v-model="showdialoguebox" @yes="confirmcreate">
+                    <template #title>
+                        Confirm User Login
+                    </template>
+                    <template #message>
+                        Welcome ,Shall we proceed!
+                    </template>
+                    </dialoguebox>
                 </v-card-text>
 
                 <v-divider></v-divider>

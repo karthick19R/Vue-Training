@@ -1,9 +1,10 @@
 <script setup>
 import { computed, ref } from 'vue';
-// import tablecomponent from '../components/tablecomponent.vue'
 import dialoguebox from '@/components/dialoguebox.vue'
 import { useUserDetails } from '@/stores/score';
-
+import { getuser } from '@/service/userapi';
+const apiusers= await getuser()
+console.log("Api Users",apiusers)
 const userstore =useUserDetails()
 const headers = computed(() => {
   if (userstore.users.length === 0) return []
@@ -25,6 +26,7 @@ function removeUser(index) {
 }
 function confirmUpdate(){
     userstore.removeUser(deleteid)
+    showdialoguebox.value=false
     router.push('/table')
 }
 const rows=computed(()=>{
@@ -72,6 +74,31 @@ const rows=computed(()=>{
 </template>
 
 <style scoped>
-.table-page { background-color:#f5f5f5; height:100vh; overflow-y:auto; }
-.table-card { border-radius:8px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+.table-page {
+  background: #f0f4f8;
+  min-height: 100vh;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.table-card {
+  border-radius: 20px;
+  box-shadow: 0 4px 24px rgba(15, 23, 42, 0.12);
+  border: 1px solid #e2e8f0;
+  background: white;
+  overflow: hidden;
+  transition: box-shadow 0.3s ease;
+}
+
+.table-card:hover {
+  box-shadow: 0 8px 32px rgba(15, 23, 42, 0.16);
+}
+
+.table-card :deep(.v-card__title) {
+  letter-spacing: 0.3px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  color: white;
+}
+
 </style>
